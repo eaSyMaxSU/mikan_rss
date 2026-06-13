@@ -1,0 +1,10 @@
+# local secrets & runtime files
+config.yaml
+seen.json
+*.log
+
+# build output
+/mikan-rss
+
+# local editor / tooling state
+.claude/
