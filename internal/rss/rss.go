@@ -51,7 +51,7 @@ func Fetch(url string) (string, []Item, error) {
 	if err != nil {
 		return "", nil, err
 	}
-	req.Header.Set("User-Agent", "mikan-rss/1.0 (+https://github.com)")
+	req.Header.Set("User-Agent", "mikan-rss/1.0 (+https://github.com/eaSyMaxSU/mikan_rss)")
 
 	resp, err := httpClient.Do(req)
 	if err != nil {

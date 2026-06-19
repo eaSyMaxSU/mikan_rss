@@ -1,5 +1,7 @@
 # mikan-rss
 
+https://github.com/eaSyMaxSU/mikan_rss
+
 A minimal Go program that fetches [mikan](https://mikanani.me) RSS feeds,
 applies title filter rules, and adds matching torrents to
 [qBittorrent](https://www.qbittorrent.org) via its Web API.
