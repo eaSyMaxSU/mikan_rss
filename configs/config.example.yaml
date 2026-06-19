@@ -1,0 +1,29 @@
+# Copy to config.yaml in the project root and fill in your details.
+
+rss:
+  - "https://mikanani.me/RSS/MyBangumi?token=YOUR_TOKEN"
+  # - "https://mikanani.me/RSS/Bangumi?bangumiId=123&subgroupid=456"
+
+filters:
+  include:
+    - "1080p"
+    - "简"
+  exclude:
+    - "720p"
+    - "HEVC"
+  # Drop 繁-only releases, but keep 简繁.
+  exclude_unless:
+    - pattern: "繁"
+      unless: "简"
+  # regex: false
+
+qbittorrent:
+  url: "http://127.0.0.1:8080"
+  username: "admin"
+  password: "adminadmin"
+  # category: "anime"
+  # save_path: "/path/to/save"
+  # paused: false
+
+# state_file: "data/seen.json"
+# log_file: "data/mikan_rss.log"

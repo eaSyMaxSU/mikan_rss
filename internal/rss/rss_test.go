@@ -1,11 +1,10 @@
-package main
+package rss
 
 import (
 	"encoding/xml"
 	"testing"
 )
 
-// A trimmed but representative mikan RSS 2.0 payload.
 const sampleMikanRSS = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
@@ -35,24 +34,24 @@ const sampleMikanRSS = `<?xml version="1.0" encoding="UTF-8"?>
 </rss>`
 
 func TestParseMikanRSS(t *testing.T) {
-	var feed rssFeed
-	if err := xml.Unmarshal([]byte(sampleMikanRSS), &feed); err != nil {
+	var parsed feed
+	if err := xml.Unmarshal([]byte(sampleMikanRSS), &parsed); err != nil {
 		t.Fatalf("unmarshal: %v", err)
 	}
 
-	if got, want := feed.Channel.Title, "Mikan Project - 某番组"; got != want {
+	if got, want := parsed.Channel.Title, "Mikan Project - 某番组"; got != want {
 		t.Errorf("channel title = %q, want %q", got, want)
 	}
-	if len(feed.Channel.Items) != 2 {
-		t.Fatalf("got %d items, want 2", len(feed.Channel.Items))
+	if len(parsed.Channel.Items) != 2 {
+		t.Fatalf("got %d items, want 2", len(parsed.Channel.Items))
 	}
 
-	first := feed.Channel.Items[0]
-	if want := "https://mikanani.me/Download/20240101/aaaa1111.torrent"; first.torrentURL() != want {
-		t.Errorf("torrentURL = %q, want %q", first.torrentURL(), want)
+	first := parsed.Channel.Items[0]
+	if want := "https://mikanani.me/Download/20240101/aaaa1111.torrent"; first.TorrentURL() != want {
+		t.Errorf("TorrentURL = %q, want %q", first.TorrentURL(), want)
 	}
-	if first.id() != first.torrentURL() {
-		t.Errorf("id should fall back to torrent URL, got %q", first.id())
+	if first.ID() != first.TorrentURL() {
+		t.Errorf("ID should fall back to torrent URL, got %q", first.ID())
 	}
 	if first.Title != "[字幕组] 某番组 - 01 [1080p]" {
 		t.Errorf("unexpected title %q", first.Title)

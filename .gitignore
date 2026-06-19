@@ -1,10 +1,12 @@
-# local secrets & runtime files
+# local config & secrets
 config.yaml
-seen.json
-*.log
+
+# runtime data
+data/*
+!data/.gitkeep
 
 # build output
-/mikan-rss
+bin/
 
 # local editor / tooling state
 .claude/

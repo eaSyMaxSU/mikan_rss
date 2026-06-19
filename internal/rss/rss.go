@@ -1,4 +1,4 @@
-package main
+package rss
 
 import (
 	"encoding/xml"
@@ -9,15 +9,8 @@ import (
 	"time"
 )
 
-// rssFeed / rssItem cover just the fields we need from a mikan RSS 2.0 feed.
-type rssFeed struct {
-	Channel struct {
-		Title string    `xml:"title"`
-		Items []rssItem `xml:"item"`
-	} `xml:"channel"`
-}
-
-type rssItem struct {
+// Item is one entry from a mikan RSS feed.
+type Item struct {
 	Title     string `xml:"title"`
 	Link      string `xml:"link"`
 	GUID      string `xml:"guid"`
@@ -27,14 +20,14 @@ type rssItem struct {
 	} `xml:"enclosure"`
 }
 
-// torrentURL is the .torrent download link PikPak should fetch.
-func (it rssItem) torrentURL() string {
+// TorrentURL is the .torrent download link for this RSS item.
+func (it Item) TorrentURL() string {
 	return strings.TrimSpace(it.Enclosure.URL)
 }
 
-// id is the stable identifier used for de-duplication across runs.
-func (it rssItem) id() string {
-	if u := it.torrentURL(); u != "" {
+// ID is the stable identifier used for de-duplication across runs.
+func (it Item) ID() string {
+	if u := it.TorrentURL(); u != "" {
 		return u
 	}
 	if g := strings.TrimSpace(it.GUID); g != "" {
@@ -43,10 +36,17 @@ func (it rssItem) id() string {
 	return strings.TrimSpace(it.Link)
 }
 
+type feed struct {
+	Channel struct {
+		Title string `xml:"title"`
+		Items []Item `xml:"item"`
+	} `xml:"channel"`
+}
+
 var httpClient = &http.Client{Timeout: 30 * time.Second}
 
-// fetchFeed downloads and parses one RSS feed, returning its channel title and items.
-func fetchFeed(url string) (string, []rssItem, error) {
+// Fetch downloads and parses one RSS feed, returning its channel title and items.
+func Fetch(url string) (string, []Item, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return "", nil, err
@@ -63,15 +63,15 @@ func fetchFeed(url string) (string, []rssItem, error) {
 		return "", nil, fmt.Errorf("unexpected status %s", resp.Status)
 	}
 
-	body, err := io.ReadAll(io.LimitReader(resp.Body, 32<<20)) // 32 MiB safety cap
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 32<<20))
 	if err != nil {
 		return "", nil, err
 	}
 
-	var feed rssFeed
-	if err := xml.Unmarshal(body, &feed); err != nil {
+	var parsed feed
+	if err := xml.Unmarshal(body, &parsed); err != nil {
 		return "", nil, fmt.Errorf("parse rss: %w", err)
 	}
 
-	return strings.TrimSpace(feed.Channel.Title), feed.Channel.Items, nil
+	return strings.TrimSpace(parsed.Channel.Title), parsed.Channel.Items, nil
 }
