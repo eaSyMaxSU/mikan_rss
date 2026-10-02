@@ -61,3 +61,7 @@ and `data/mikan_rss.log`.
 ```
 
 Point your own `cron` / `launchd` at the binary to run on a schedule.
+
+## License
+
+[MIT](LICENSE)
